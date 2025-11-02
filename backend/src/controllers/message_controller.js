@@ -50,8 +50,12 @@ export const sendMessage = async (req,res) => {
             image:imageurl,
         })
         await newMessage.save();
+        const receiverSocketId = getReceiverSocketId(receiverId);
+        if (receiverSocketId) {
+          io.to(receiverSocketId).emit("newMessage", newMessage);
+        }
         //todo: realtime functionality goes here => socket.io
-        res.status(200).json(newMessage)
+        res.status(201).json(newMessage)
     } catch (error) {
         console.log("Error in sendMessage Controller:", error.message);
         res.status(500).json({ error: "Internal server error" })
